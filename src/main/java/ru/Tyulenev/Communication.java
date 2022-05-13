@@ -22,6 +22,8 @@ public class Communication {
     @Autowired
     private RestTemplate restTemplate;
 
+    private final String URL_GET_BRANCHES = "http://localhost:8080/rest/appointment/branches/"
+
 //    private final String URL_GET_QUEUES = "http://localhost:8080/rest/entrypoint/branches/2/queues/";
     private final String URL_GET_QUEUES_b = "http://localhost:8080/rest/entrypoint/branches/";
     private final String URL_GET_QUEUES_end = "/queues/";
@@ -34,10 +36,11 @@ public class Communication {
     private final String URL_GET_TICKETS_IN_SERVICEPOINT_b  = "http://localhost:8080/rest/servicepoint/branches/";
     private final String URL_GET_TICKETS_IN_SERVICEPOINT_end  = "/";
 
-    private final String URL_DELETE_TICKET = "";
+    private final String URL_DELETE_TICKET = "http://localhost:8080/rest/servicepoint/branches/2/servicePoints/4/visits/25/";
 
-    private ArrayList<Integer> listOfActualQueues;
-    private ArrayList<Integer> listOfActualIdBranches;
+//    private ArrayList<Integer> listOfActualQueues;
+//    private ArrayList<Integer> listOfActualIdBranches;
+
     HttpEntity httpEnt = new HttpEntity(createHeaders("superadmin", "ulan"));
 
     private HttpHeaders createHeaders(final String username, final String password) {
@@ -74,7 +77,7 @@ public class Communication {
                 restTemplate.exchange(
                         URL_GET_TICKETS_b + numberOfQueue + URL_GET_TICKETS_end,
                         HttpMethod.GET,
-                        new HttpEntity(createHeaders("superadmin", "ulan")),
+                        httpEnt,
                         new ParameterizedTypeReference<List<Ticket>>() {});
 
         List<Ticket> allTickets = responseEntity.getBody();
@@ -91,12 +94,16 @@ public class Communication {
 
     public void deleteTicket(int numberOfBranch, int numberOfQueue, int numberOfTicket) {
 
-        ResponseEntity<List<Ticket>> responseEntity =
+//        ResponseEntity<List<Ticket>> responseEntity =
                 restTemplate.exchange(
-                        URL_GET_TICKETS_b + numberOfQueue + URL_GET_TICKETS_end,
+                        URL_DELETE_TICKET,
                         HttpMethod.DELETE,
-                        new HttpEntity(createHeaders("superadmin", "ulan")),
-                        new ParameterizedTypeReference<List<Ticket>>() {});
+                        httpEnt,
+                        Void.class,
+                        1);
+//        restTemplate.delete(URL_DELETE_TICKET
+//            , HttpMethod.DELETE
+//                , httpEnt);
     }
 
     public List<Ticket> getAllTickets() {
@@ -115,6 +122,7 @@ public class Communication {
     }
 
 
+
     public Queues getQueue(int id) {
 
         return null;
@@ -127,4 +135,6 @@ public class Communication {
     public void deleteQue() {
 
     }
+
+
 }
