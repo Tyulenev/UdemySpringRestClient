@@ -13,6 +13,7 @@ import ru.Tyulenev.Entity.Queues;
 import ru.Tyulenev.Entity.Ticket;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,9 +22,16 @@ public class Communication {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String URL_GET_QUEUES = "http://localhost:8080/rest/entrypoint/branches/2/queues/";
-    private final String URL_GET_TICKETS = "http://localhost:8080/rest/entrypoint/branches/2/queues/4/visits/";
+//    private final String URL_GET_QUEUES = "http://localhost:8080/rest/entrypoint/branches/2/queues/";
+    private final String URL_GET_QUEUES_b = "http://localhost:8080/rest/entrypoint/branches/";
+    private final String URL_GET_QUEUES_end = "/queues/";
 
+//    private final String URL_GET_TICKETS = "http://localhost:8080/rest/entrypoint/branches/2/queues/4/visits/";
+    private final String URL_GET_TICKETS_b = "http://localhost:8080/rest/entrypoint/branches/2/queues/";
+    private final String URL_GET_TICKETS_end = "/visits/";
+
+    private ArrayList<Integer> listOfActualQueues;
+    private ArrayList<Integer> listOfActualIdBranches;
 
     private HttpHeaders createHeaders(final String username, final String password) {
         return new HttpHeaders() {{
@@ -35,15 +43,16 @@ public class Communication {
         }};
     }
 
-    public List<Queues> showAllQueues() {
+    public List<Queues> showAllQueues(int numberOfBranch) {
         ResponseEntity<List<Queues>> responseEntity =
                 restTemplate.exchange(
-                        URL_GET_QUEUES,
+                        URL_GET_QUEUES_b + numberOfBranch + URL_GET_QUEUES_end,
                         HttpMethod.GET,
                         new HttpEntity(createHeaders("superadmin", "ulan")),
                         new ParameterizedTypeReference<List<Queues>>() {});
 
         List<Queues> allQueues = responseEntity.getBody();
+        System.out.println("+++++++++++++++++++++showAllQueues+++++++++++++++++++++++++");
         System.out.println("ALL QUES:");
         for (Queues q:allQueues)
         {
@@ -53,16 +62,18 @@ public class Communication {
         return allQueues;
     }
 
-    public List<Ticket> getAllTickets() {
+    public List<Ticket> getTicketsFromQueue(int numberOfQueue) {
         ResponseEntity<List<Ticket>> responseEntity =
                 restTemplate.exchange(
-                        URL_GET_TICKETS,
+                        URL_GET_TICKETS_b + numberOfQueue + URL_GET_TICKETS_end,
                         HttpMethod.GET,
                         new HttpEntity(createHeaders("superadmin", "ulan")),
                         new ParameterizedTypeReference<List<Ticket>>() {});
 
         List<Ticket> allTickets = responseEntity.getBody();
-        System.out.println("ALL Tickets:");
+        System.out.println("+++++++++++++++++++++getTicketsFromQueue+++++++++++++++++++++++++" +
+                "\nQueue number: " + numberOfQueue +
+                "\nALL Tickets:");
         for (Ticket t:allTickets)
         {
             System.out.println(t);
@@ -71,6 +82,9 @@ public class Communication {
         return allTickets;
     }
 
+    public List<Ticket> getAllTickets() {
+        return null;
+    }
 
 
     public Queues getQueue(int id) {
