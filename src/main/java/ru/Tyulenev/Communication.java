@@ -30,8 +30,15 @@ public class Communication {
     private final String URL_GET_TICKETS_b = "http://localhost:8080/rest/entrypoint/branches/2/queues/";
     private final String URL_GET_TICKETS_end = "/visits/";
 
+//    private final String URL_GET_TICKETS_IN_SERVICEPOINT  = "http://localhost:8080/rest/servicepoint/branches/2/queues/4/";
+    private final String URL_GET_TICKETS_IN_SERVICEPOINT_b  = "http://localhost:8080/rest/servicepoint/branches/";
+    private final String URL_GET_TICKETS_IN_SERVICEPOINT_end  = "/";
+
+    private final String URL_DELETE_TICKET = "";
+
     private ArrayList<Integer> listOfActualQueues;
     private ArrayList<Integer> listOfActualIdBranches;
+    HttpEntity httpEnt = new HttpEntity(createHeaders("superadmin", "ulan"));
 
     private HttpHeaders createHeaders(final String username, final String password) {
         return new HttpHeaders() {{
@@ -48,7 +55,7 @@ public class Communication {
                 restTemplate.exchange(
                         URL_GET_QUEUES_b + numberOfBranch + URL_GET_QUEUES_end,
                         HttpMethod.GET,
-                        new HttpEntity(createHeaders("superadmin", "ulan")),
+                        httpEnt,
                         new ParameterizedTypeReference<List<Queues>>() {});
 
         List<Queues> allQueues = responseEntity.getBody();
@@ -82,7 +89,28 @@ public class Communication {
         return allTickets;
     }
 
+    public void deleteTicket(int numberOfBranch, int numberOfQueue, int numberOfTicket) {
+
+        ResponseEntity<List<Ticket>> responseEntity =
+                restTemplate.exchange(
+                        URL_GET_TICKETS_b + numberOfQueue + URL_GET_TICKETS_end,
+                        HttpMethod.DELETE,
+                        new HttpEntity(createHeaders("superadmin", "ulan")),
+                        new ParameterizedTypeReference<List<Ticket>>() {});
+    }
+
     public List<Ticket> getAllTickets() {
+        System.out.println("+++++++++++++++++++++getAllTickets+++++++++++++++++++++++++");
+        //check all queues
+        List<Queues> listQueues = showAllQueues(2);
+        for (Queues q:listQueues) {
+            System.out.println("Queue info: " + q);
+            if (q.getCustomersWaiting()>0) {
+                getTicketsFromQueue(q.getId());
+            } else {
+                System.out.println("!!! No any tickets in this queue");
+            };
+        }
         return null;
     }
 

@@ -13,9 +13,10 @@ public class App
         Communication communication = context.getBean("communication"
                 , Communication.class);
 
-//        communication.showAllQueues(2);
-        communication.getTicketsFromQueue(4);
+        communication.showAllQueues(2);
+//        communication.getTicketsFromQueue(4);
 
+//        communication.getAllTickets();
     }
 
 }
